@@ -6,7 +6,7 @@ HSM Agents Hub is a collection of smart agents with the ability to connect diffe
 
 ## Download
 
-You can download the latest version of the application on MacOS in the releases section of this repository. Make sure you have [llama3](https://ollama.com/library/llama3) model installed and running.
+You can download the latest version of the application on MacOS (for M Series Silicon Chips) in the [releases](https://github.com/ArtemUpnode/HSM-Agents-Hub/releases) section of this repository. Make sure you have [llama3](https://ollama.com/library/llama3) model installed and running.
 
 ## Implemented
 
