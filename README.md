@@ -1,4 +1,4 @@
-# hsm-agents-hub
+# HSM-Agents-Hub
 
 ![Preview](https://github.com/ArtemUpnode/HSM-Agents-Hub/blob/main/preview.png)
 
