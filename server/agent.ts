@@ -130,11 +130,14 @@ export async function Chat(body: any) {
     ['human', '{input}']
   ])
 
-  const stream = await prompt.pipe(llm).pipe(outputParser).stream({
-    input: currentMessage.content.replace(`@YubiHSM `, ''),
-    chat_history: previousMessages,
-    devices
-  })
+  const stream = await prompt
+    .pipe(llm)
+    .pipe(outputParser)
+    .stream({
+      input: currentMessage.content.replace(`@YubiHSM `, ''),
+      chat_history: previousMessages,
+      devices
+    })
 
   return new StreamingTextResponse(
     stream.pipeThrough(createStreamDataTransformer())
