@@ -19,25 +19,25 @@ Manages the YubiHSM device and signs messages and transactions.
 1. **Get connected YubiHSM user devices to PC**
     - **Description:** Retrieves a list of YubiHSM devices connected to the PC.
     - **Required Parameters:** None
-    - **Example:** \`@YubiHSM My devices\`
+    - **Example:** `@YubiHSM My devices`
 
 2. **Get keys in YubiHSM user device**
     - **Description:** Fetches keys stored in a YubiHSM user device.
     - **Required Parameters:**
-      - \`device_serial_id\`: (string) YubiHSM device serial id
-      - \`auth_key_id\`: (number) YubiHSM auth key id
-      - \`password\`: (string) YubiHSM auth key password
-    - **Example:** \`@YubiHSM Get keys in device "123456", auth key 1, password "your_password"\`
+      - `device_serial_id`: (string) YubiHSM device serial id
+      - `auth_key_id`: (number) YubiHSM auth key id
+      - `password`: (string) YubiHSM auth key password
+    - **Example:** `@YubiHSM Get keys in device "123456", auth key 1, password "your_password"`
 
 3. **Sign a user message with a specific key in YubiHSM user device**
     - **Description:** Signs a given message using a specific key stored in the YubiHSM user device.
     - **Required Parameters:**
-      - \`message\`: (string) Message for signing
-      - \`device_serial_id\`: (string) YubiHSM device serial id
-      - \`auth_key_id\`: (number) YubiHSM auth key id
-      - \`password\`: (string) YubiHSM auth key password
-      - \`signing_key_id\`: (number) Id of the key that signs the message
-    - **Example:** \`@YubiHSM Sign message "Hello World" with device "123456", auth key 1, password "your_password" and key id 2\`
+      - `message`: (string) Message for signing
+      - `device_serial_id`: (string) YubiHSM device serial id
+      - `auth_key_id`: (number) YubiHSM auth key id
+      - `password`: (string) YubiHSM auth key password
+      - `signing_key_id`: (number) Id of the key that signs the message
+    - **Example:** `@YubiHSM Sign message "Hello World" with device "123456", auth key 1, password "your_password" and key id 2`
 
 ## Under development/In plans
 
