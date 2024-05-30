@@ -23,7 +23,7 @@ export interface Agent {
   useYubihsm: boolean
 }
 
-type Agents = {
+export type AgentsType = {
   [key: string]: Agent
 }
 
@@ -50,20 +50,20 @@ export default function Agents({ setInput, showPinnedOnly }: AgentsProps) {
     const storedAgents = getAgentsFromStorage()
 
     if (storedAgents) {
-      return JSON.parse(storedAgents)
+      return JSON.parse(storedAgents) as AgentsType
     }
 
     localStorage.setItem('Agents', defaultAgents)
-    return JSON.parse(defaultAgents.replace(/\n/g, '\\n'))
+    return JSON.parse(defaultAgents.replace(/\n/g, '\\n')) as AgentsType
   })
 
-  function saveAgents(passAgents: any) {
+  function saveAgents(passAgents: AgentsType) {
     localStorage.setItem('Agents', JSON.stringify(passAgents))
     router.refresh()
   }
 
   const handlePinned = (AgentId: string) => {
-    const updatedAgents = {
+    const updatedAgents: AgentsType = {
       ...agents,
       [AgentId]: { ...agents[AgentId], pinned: !agents[AgentId].pinned }
     }
@@ -101,7 +101,7 @@ export default function Agents({ setInput, showPinnedOnly }: AgentsProps) {
   return (
     <>
       <div className="flex flex-wrap gap-4 mx-4 mt-6 justify-center">
-        {Object.entries(agents as Agents)
+        {Object.entries(agents as AgentsType)
           .filter(
             ([_key, agent]: [string, Agent]) => !showPinnedOnly || agent.pinned
           )

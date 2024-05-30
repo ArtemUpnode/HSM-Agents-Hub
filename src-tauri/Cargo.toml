@@ -8,7 +8,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.5.1", features = [] }
+tauri-build = { version = "1.5.2", features = [] }
 
 [dependencies]
 serde_json = "1.0"
@@ -21,8 +21,13 @@ tmkms = { version = "0.14.0", features = [ "yubihsm" ] }
 subtle-encoding = "0.5.1"
 time = "0.3.36"
 tendermint = { version = "0.36.0", features = [ "secp256k1" ] }
-tauri = { version = "1.6.2", features = [ "os-all", "shell-open", "shell-sidecar"] }
-tauri-invoke-http = { git = "https://github.com/tauri-apps/tauri-invoke-http", branch = "dev" }
+tauri = { version = "1.6.7", features = [ "os-all", "shell-open", "shell-sidecar"] }
+axum = "0.7.5"
+tokio = { version = "1.37.0", features = ["full"] }
+tracing-subscriber = "0.3.18"
+ethers-signers = { version = "2.0.14", features = ["yubihsm"] }
+ethers-core = "2.0.14"
+elliptic-curve = "0.13.8"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!

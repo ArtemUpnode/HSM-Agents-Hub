@@ -12,14 +12,14 @@ import { useRouter } from 'next/navigation'
 import { useState, useRef } from 'react'
 
 import { FooterText } from '@/components/footer'
-import { Agent } from '@/components/agents'
+import { AgentsType } from '@/components/agents'
 import { Command, CommandGroup, CommandItem } from '@/components/ui/command'
 
 export interface PromptProps
   extends Pick<UseChatHelpers, 'input' | 'setInput'> {
   onSubmit: (value: string) => void
   isLoading: boolean
-  agents: any
+  agents: AgentsType
 }
 
 export function PromptForm({
@@ -76,18 +76,18 @@ export function PromptForm({
             <CommandGroup className="">
               {Object.entries(agents)
                 .filter(
-                  ([_key, agent]) => (agent as unknown as Agent).pinned === true
+                  ([_key, agent]) => agent.pinned === true
                 )
                 .map(([key, agent]) => (
                   <CommandItem
                     key={key}
-                    value={(agent as Agent).name}
+                    value={agent.name}
                     onSelect={_currentValue => {
-                      setInput(`@${(agent as Agent).name} ` + input.slice(1))
+                      setInput(`@${agent.name} ` + input.slice(1))
                       setshowPopup(false)
                     }}
                   >
-                    {'@' + (agent as Agent).name}
+                    {'@' + agent.name}
                   </CommandItem>
                 ))}
             </CommandGroup>

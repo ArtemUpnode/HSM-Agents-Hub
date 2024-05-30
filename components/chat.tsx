@@ -4,17 +4,17 @@ import { useChat, type Message } from 'ai/react'
 import { cn } from '@/lib/utils'
 import { ChatList } from '@/components/chat-list'
 import { Button } from '@/components/ui/button'
-import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
+// import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
 import Agents from '@/components/agents'
-import { Agent, defaultAgents } from '@/components/agents'
+import { defaultAgents, AgentsType } from '@/components/agents'
 // import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { IconSpinner } from '@/components/ui/icons'
 import { PromptForm } from '@/components/prompt-form'
 import { getAgentsFromStorage } from '@/components/agents'
-import { invoke } from '@tauri-apps/api/tauri'
+import { useScrollAnchor } from '@/lib/hooks/use-scroll-anchor'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   id?: string
@@ -27,13 +27,15 @@ export function Chat({ id, className }: ChatProps) {
   const [initialMessages, setInitialMessages] = useState<Message[] | undefined>(
     undefined
   )
-  const [agents, setAgents] = useState(defaultAgents)
+  const [agents, setAgents] = useState(
+    JSON.parse(defaultAgents.replace(/\n/g, '\\n')) as AgentsType
+  )
 
   function refreshAgents() {
     const storedAgents = getAgentsFromStorage()
 
     if (storedAgents) {
-      setAgents(JSON.parse(storedAgents))
+      setAgents(JSON.parse(storedAgents) as AgentsType)
     }
   }
 
@@ -53,7 +55,7 @@ export function Chat({ id, className }: ChatProps) {
     }
   }, [id])
 
-  const { messages, append, isLoading, input, setInput } = useChat({
+  const { messages, isLoading, input, setInput, append } = useChat({
     api: process.env.NEXT_PUBLIC_API_URL + '/api/chat',
     initialMessages,
     id,
@@ -61,11 +63,13 @@ export function Chat({ id, className }: ChatProps) {
       id,
       locale: navigator.language
     },
-    onResponse(response) {
+    async onResponse(response) {
       if (response.status !== 200) {
-        toast.error(`${response.status} ${response.statusText}`)
+        const json = await response.json()
+        toast.error(`${response.status} ${json.error}`)
       }
     },
+    streamMode: 'text',
     onFinish(response) {
       const msg = messages ?? initialMessages
       msg.push({
@@ -79,9 +83,41 @@ export function Chat({ id, className }: ChatProps) {
     }
   })
 
+  async function sendMessage(value: string) {
+    refreshAgents()
+    let function_call: string | undefined
+
+    if (agents) {
+      const found = value.split(' ')[0]
+
+      if (found.charAt(0) === '@') {
+        const agentName = found.slice(1)
+        const agent = Object.values(agents).find(
+          agent => agent.name === agentName
+        )
+
+        if (agent) {
+          function_call = agent.useYubihsm ? 'yubihsm' : undefined
+        }
+      }
+
+      const userMessage: Message = {
+        id: nanoid(),
+        content: value,
+        role: 'user',
+        function_call
+      }
+      append(userMessage)
+      messages.push(userMessage)
+    }
+  }
+
+  const { messagesRef, scrollRef, visibilityRef } =
+    useScrollAnchor()
+
   return (
-    <>
-      <div className={cn('pb-[200px] md:pt-2', className)}>
+    <div ref={scrollRef}>
+      <div className={cn('pb-[200px] md:pt-2', className)} ref={messagesRef}>
         {messages.length ? (
           <>
             <ChatList messages={messages} />
@@ -91,7 +127,7 @@ export function Chat({ id, className }: ChatProps) {
             <Agents setInput={setInput} showPinnedOnly={showPinnedOnly} />
           </>
         )}
-        <ChatScrollAnchor trackVisibility={isLoading} />
+        <div className="w-full h-px" ref={visibilityRef} />
       </div>
       <div className="fixed inset-x-0 bottom-0 w-full bg-gradient-to-b from-muted/30 from-0% to-muted/30 to-50% animate-in duration-300 ease-in-out dark:from-background/10 dark:from-10% dark:to-background/80 peer-[[data-state=open]]:group-[]:lg:pl-[250px] peer-[[data-state=open]]:group-[]:xl:pl-[300px]">
         {/* <ButtonScrollToBottom /> */}
@@ -106,47 +142,7 @@ export function Chat({ id, className }: ChatProps) {
           </div>
           <div className="px-4 py-2 space-y-2 shadow-lg bg-background sm:rounded-t-xl">
             <PromptForm
-              onSubmit={async value => {
-                let prompt = value
-                let function_call = null as any
-                let devices = null as any
-                refreshAgents()
-
-                if (agents) {
-                  const found = input.split(' ')[0]
-                  if (found.charAt(0) === '@') {
-                    for (const [_key, agent] of Object.entries(agents)) {
-                      const agentName = (agent as unknown as Agent).name
-
-                      if (value.startsWith(`@${agentName}`)) {
-                        function_call = (agent as unknown as Agent).useYubihsm
-                          ? 'yubihsm'
-                          : null
-
-                        if (function_call === 'yubihsm') {
-                          try {
-                            devices = await invoke('detect_devices')
-                          } catch (e) {
-                            devices = e
-                          }
-                        }
-                      }
-                    }
-                  }
-
-                  const newMsg = {
-                    id: nanoid(),
-                    content: prompt,
-                    role: 'user',
-                    function_call: {
-                      name: function_call,
-                      arguments: devices
-                    }
-                  } as Message
-                  append(newMsg)
-                  messages.push(newMsg)
-                }
-              }}
+              onSubmit={sendMessage}
               input={input}
               setInput={setInput}
               isLoading={isLoading}
@@ -155,6 +151,6 @@ export function Chat({ id, className }: ChatProps) {
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }

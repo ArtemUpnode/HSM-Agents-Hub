@@ -1,4 +1,4 @@
-import { Chat } from '@/server/agent'
+import { Chat } from '@/server/chat'
 
 export const runtime = 'edge'
 
