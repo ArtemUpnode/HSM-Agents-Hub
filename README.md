@@ -2,7 +2,7 @@
 
 ![Preview](https://github.com/ArtemUpnode/HSM-Agents-Hub/blob/main/preview.png)
 
-HSM Agents Hub is a collection of smart agents with the ability to connect different HSMs (YubiHSM, Ledger, etc) to manage the device and sign messages and transactions.
+HSM Agents Hub is a collection of Morpheus smart agents with the ability to connect different HSMs (YubiHSM, Ledger, etc) to manage the device and sign messages and transactions.
 
 ## Download
 
